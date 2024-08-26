@@ -31,6 +31,7 @@ public abstract class FlightsServiceBase : IFlightsService
             Destination = createDto.Destination,
             FlightNumber = createDto.FlightNumber,
             Origin = createDto.Origin,
+            Price = createDto.Price,
             UpdatedAt = createDto.UpdatedAt
         };
 
@@ -127,7 +128,9 @@ public abstract class FlightsServiceBase : IFlightsService
         if (updateDto.Bookings != null)
         {
             flight.Bookings = await _context
-                .Bookings.Where(booking => updateDto.Bookings.Select(t => t).Contains(booking.Id))
+                .Bookings.Where(booking =>
+                    updateDto.Bookings.Select(t => t.Id).Contains(booking.Id)
+                )
                 .ToListAsync();
         }
 
@@ -155,7 +158,7 @@ public abstract class FlightsServiceBase : IFlightsService
     /// </summary>
     public async Task ConnectBookings(
         FlightWhereUniqueInput uniqueId,
-        BookingWhereUniqueInput[] bookingsId
+        BookingWhereUniqueInput[] childrenIds
     )
     {
         var parent = await _context
@@ -166,19 +169,19 @@ public abstract class FlightsServiceBase : IFlightsService
             throw new NotFoundException();
         }
 
-        var bookings = await _context
-            .Bookings.Where(t => bookingsId.Select(x => x.Id).Contains(t.Id))
+        var children = await _context
+            .Bookings.Where(t => childrenIds.Select(x => x.Id).Contains(t.Id))
             .ToListAsync();
-        if (bookings.Count == 0)
+        if (children.Count == 0)
         {
             throw new NotFoundException();
         }
 
-        var bookingsToConnect = bookings.Except(parent.Bookings);
+        var childrenToConnect = children.Except(parent.Bookings);
 
-        foreach (var booking in bookingsToConnect)
+        foreach (var child in childrenToConnect)
         {
-            parent.Bookings.Add(booking);
+            parent.Bookings.Add(child);
         }
 
         await _context.SaveChangesAsync();
@@ -189,7 +192,7 @@ public abstract class FlightsServiceBase : IFlightsService
     /// </summary>
     public async Task DisconnectBookings(
         FlightWhereUniqueInput uniqueId,
-        BookingWhereUniqueInput[] bookingsId
+        BookingWhereUniqueInput[] childrenIds
     )
     {
         var parent = await _context
@@ -200,13 +203,13 @@ public abstract class FlightsServiceBase : IFlightsService
             throw new NotFoundException();
         }
 
-        var bookings = await _context
-            .Bookings.Where(t => bookingsId.Select(x => x.Id).Contains(t.Id))
+        var children = await _context
+            .Bookings.Where(t => childrenIds.Select(x => x.Id).Contains(t.Id))
             .ToListAsync();
 
-        foreach (var booking in bookings)
+        foreach (var child in children)
         {
-            parent.Bookings?.Remove(booking);
+            parent.Bookings?.Remove(child);
         }
         await _context.SaveChangesAsync();
     }
@@ -235,7 +238,7 @@ public abstract class FlightsServiceBase : IFlightsService
     /// </summary>
     public async Task UpdateBookings(
         FlightWhereUniqueInput uniqueId,
-        BookingWhereUniqueInput[] bookingsId
+        BookingWhereUniqueInput[] childrenIds
     )
     {
         var flight = await _context
@@ -246,16 +249,23 @@ public abstract class FlightsServiceBase : IFlightsService
             throw new NotFoundException();
         }
 
-        var bookings = await _context
-            .Bookings.Where(a => bookingsId.Select(x => x.Id).Contains(a.Id))
+        var children = await _context
+            .Bookings.Where(a => childrenIds.Select(x => x.Id).Contains(a.Id))
             .ToListAsync();
 
-        if (bookings.Count == 0)
+        if (children.Count == 0)
         {
             throw new NotFoundException();
         }
 
-        flight.Bookings = bookings;
+        flight.Bookings = children;
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<double> CalculateFlightOccupancy(
+        FlightWhereUniqueInput flightWhereUniqueInputDto
+    )
+    {
+        throw new NotImplementedException();
     }
 }

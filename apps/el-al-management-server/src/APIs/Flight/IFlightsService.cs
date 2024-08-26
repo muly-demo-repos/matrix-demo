@@ -66,4 +66,5 @@ public interface IFlightsService
         FlightWhereUniqueInput uniqueId,
         BookingWhereUniqueInput[] bookingsId
     );
+    public Task<double> CalculateFlightOccupancy(FlightWhereUniqueInput flightWhereUniqueInputDto);
 }

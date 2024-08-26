@@ -1,5 +1,7 @@
 using System.Reflection;
 using ElAlManagement;
+using ElAlManagement.APIs;
+using ElAlManagement.Brokers.Mymessagebroker;
 using ElAlManagement.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +16,7 @@ builder.Services.RegisterServices();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
+    options.UseOpenApiAuthentication();
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
@@ -27,9 +30,22 @@ builder.Services.AddCors(builder =>
         }
     );
 });
+builder.Services.AddApiAuthentication();
+app.UseApiAuthentication();
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await RolesManager.SyncRoles(services, app.Configuration);
+}
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await SeedDevelopmentData.SeedDevUser(services, app.Configuration);
+}
 builder.Services.AddDbContext<ElAlManagementDbContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
+builder.AddMymessagebroker();
 var app = builder.Build();
 
 app.UseCors();

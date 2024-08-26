@@ -1,9 +1,11 @@
 using ElAlManagement.Infrastructure.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ElAlManagement.Infrastructure;
 
-public class ElAlManagementDbContext : DbContext
+public class ElAlManagementDbContext : IdentityDbContext<IdentityUser>
 {
     public ElAlManagementDbContext(DbContextOptions<ElAlManagementDbContext> options)
         : base(options) { }

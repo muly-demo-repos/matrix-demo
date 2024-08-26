@@ -2,6 +2,7 @@ using ElAlManagement.APIs;
 using ElAlManagement.APIs.Common;
 using ElAlManagement.APIs.Dtos;
 using ElAlManagement.APIs.Errors;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ElAlManagement.APIs;
@@ -21,6 +22,7 @@ public abstract class BookingsControllerBase : ControllerBase
     /// Create one Booking
     /// </summary>
     [HttpPost()]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult<Booking>> CreateBooking(BookingCreateInput input)
     {
         var booking = await _service.CreateBooking(input);
@@ -32,6 +34,7 @@ public abstract class BookingsControllerBase : ControllerBase
     /// Delete one Booking
     /// </summary>
     [HttpDelete("{Id}")]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult> DeleteBooking([FromRoute()] BookingWhereUniqueInput uniqueId)
     {
         try
@@ -50,6 +53,7 @@ public abstract class BookingsControllerBase : ControllerBase
     /// Find many Bookings
     /// </summary>
     [HttpGet()]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult<List<Booking>>> Bookings(
         [FromQuery()] BookingFindManyArgs filter
     )
@@ -72,6 +76,7 @@ public abstract class BookingsControllerBase : ControllerBase
     /// Get one Booking
     /// </summary>
     [HttpGet("{Id}")]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult<Booking>> Booking([FromRoute()] BookingWhereUniqueInput uniqueId)
     {
         try
@@ -88,6 +93,7 @@ public abstract class BookingsControllerBase : ControllerBase
     /// Update one Booking
     /// </summary>
     [HttpPatch("{Id}")]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult> UpdateBooking(
         [FromRoute()] BookingWhereUniqueInput uniqueId,
         [FromQuery()] BookingUpdateInput bookingUpdateDto
@@ -108,7 +114,7 @@ public abstract class BookingsControllerBase : ControllerBase
     /// <summary>
     /// Get a Flight record for Booking
     /// </summary>
-    [HttpGet("{Id}/flights")]
+    [HttpGet("{Id}/flight")]
     public async Task<ActionResult<List<Flight>>> GetFlight(
         [FromRoute()] BookingWhereUniqueInput uniqueId
     )
@@ -120,7 +126,7 @@ public abstract class BookingsControllerBase : ControllerBase
     /// <summary>
     /// Get a Passenger record for Booking
     /// </summary>
-    [HttpGet("{Id}/passengers")]
+    [HttpGet("{Id}/passenger")]
     public async Task<ActionResult<List<Passenger>>> GetPassenger(
         [FromRoute()] BookingWhereUniqueInput uniqueId
     )
@@ -133,6 +139,7 @@ public abstract class BookingsControllerBase : ControllerBase
     /// Connect multiple Seatings records to Booking
     /// </summary>
     [HttpPost("{Id}/seatings")]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult> ConnectSeatings(
         [FromRoute()] BookingWhereUniqueInput uniqueId,
         [FromQuery()] SeatingWhereUniqueInput[] seatingsId
@@ -154,6 +161,7 @@ public abstract class BookingsControllerBase : ControllerBase
     /// Disconnect multiple Seatings records from Booking
     /// </summary>
     [HttpDelete("{Id}/seatings")]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult> DisconnectSeatings(
         [FromRoute()] BookingWhereUniqueInput uniqueId,
         [FromBody()] SeatingWhereUniqueInput[] seatingsId
@@ -175,6 +183,7 @@ public abstract class BookingsControllerBase : ControllerBase
     /// Find multiple Seatings records for Booking
     /// </summary>
     [HttpGet("{Id}/seatings")]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult<List<Seating>>> FindSeatings(
         [FromRoute()] BookingWhereUniqueInput uniqueId,
         [FromQuery()] SeatingFindManyArgs filter
@@ -194,6 +203,7 @@ public abstract class BookingsControllerBase : ControllerBase
     /// Update multiple Seatings records for Booking
     /// </summary>
     [HttpPatch("{Id}/seatings")]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult> UpdateSeatings(
         [FromRoute()] BookingWhereUniqueInput uniqueId,
         [FromBody()] SeatingWhereUniqueInput[] seatingsId

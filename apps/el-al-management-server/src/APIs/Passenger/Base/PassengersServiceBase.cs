@@ -129,7 +129,9 @@ public abstract class PassengersServiceBase : IPassengersService
         if (updateDto.Bookings != null)
         {
             passenger.Bookings = await _context
-                .Bookings.Where(booking => updateDto.Bookings.Select(t => t).Contains(booking.Id))
+                .Bookings.Where(booking =>
+                    updateDto.Bookings.Select(t => t.Id).Contains(booking.Id)
+                )
                 .ToListAsync();
         }
 
@@ -157,7 +159,7 @@ public abstract class PassengersServiceBase : IPassengersService
     /// </summary>
     public async Task ConnectBookings(
         PassengerWhereUniqueInput uniqueId,
-        BookingWhereUniqueInput[] bookingsId
+        BookingWhereUniqueInput[] childrenIds
     )
     {
         var parent = await _context
@@ -168,19 +170,19 @@ public abstract class PassengersServiceBase : IPassengersService
             throw new NotFoundException();
         }
 
-        var bookings = await _context
-            .Bookings.Where(t => bookingsId.Select(x => x.Id).Contains(t.Id))
+        var children = await _context
+            .Bookings.Where(t => childrenIds.Select(x => x.Id).Contains(t.Id))
             .ToListAsync();
-        if (bookings.Count == 0)
+        if (children.Count == 0)
         {
             throw new NotFoundException();
         }
 
-        var bookingsToConnect = bookings.Except(parent.Bookings);
+        var childrenToConnect = children.Except(parent.Bookings);
 
-        foreach (var booking in bookingsToConnect)
+        foreach (var child in childrenToConnect)
         {
-            parent.Bookings.Add(booking);
+            parent.Bookings.Add(child);
         }
 
         await _context.SaveChangesAsync();
@@ -191,7 +193,7 @@ public abstract class PassengersServiceBase : IPassengersService
     /// </summary>
     public async Task DisconnectBookings(
         PassengerWhereUniqueInput uniqueId,
-        BookingWhereUniqueInput[] bookingsId
+        BookingWhereUniqueInput[] childrenIds
     )
     {
         var parent = await _context
@@ -202,13 +204,13 @@ public abstract class PassengersServiceBase : IPassengersService
             throw new NotFoundException();
         }
 
-        var bookings = await _context
-            .Bookings.Where(t => bookingsId.Select(x => x.Id).Contains(t.Id))
+        var children = await _context
+            .Bookings.Where(t => childrenIds.Select(x => x.Id).Contains(t.Id))
             .ToListAsync();
 
-        foreach (var booking in bookings)
+        foreach (var child in children)
         {
-            parent.Bookings?.Remove(booking);
+            parent.Bookings?.Remove(child);
         }
         await _context.SaveChangesAsync();
     }
@@ -237,7 +239,7 @@ public abstract class PassengersServiceBase : IPassengersService
     /// </summary>
     public async Task UpdateBookings(
         PassengerWhereUniqueInput uniqueId,
-        BookingWhereUniqueInput[] bookingsId
+        BookingWhereUniqueInput[] childrenIds
     )
     {
         var passenger = await _context
@@ -248,16 +250,16 @@ public abstract class PassengersServiceBase : IPassengersService
             throw new NotFoundException();
         }
 
-        var bookings = await _context
-            .Bookings.Where(a => bookingsId.Select(x => x.Id).Contains(a.Id))
+        var children = await _context
+            .Bookings.Where(a => childrenIds.Select(x => x.Id).Contains(a.Id))
             .ToListAsync();
 
-        if (bookings.Count == 0)
+        if (children.Count == 0)
         {
             throw new NotFoundException();
         }
 
-        passenger.Bookings = bookings;
+        passenger.Bookings = children;
         await _context.SaveChangesAsync();
     }
 }
