@@ -122,7 +122,7 @@ public abstract class SeatingsServiceBase : ISeatingsService
         if (updateDto.Booking != null)
         {
             seating.Booking = await _context
-                .Bookings.Where(booking => updateDto.Booking.Id == booking.Id)
+                .Bookings.Where(booking => updateDto.Booking == booking.Id)
                 .FirstOrDefaultAsync();
         }
 
