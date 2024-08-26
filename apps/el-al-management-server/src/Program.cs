@@ -1,7 +1,6 @@
 using System.Reflection;
 using ElAlManagement;
 using ElAlManagement.APIs;
-using ElAlManagement.Brokers.Mymessagebroker;
 using ElAlManagement.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
@@ -45,7 +44,6 @@ using (var scope = app.Services.CreateScope())
 builder.Services.AddDbContext<ElAlManagementDbContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
-builder.AddMymessagebroker();
 var app = builder.Build();
 
 app.UseCors();
