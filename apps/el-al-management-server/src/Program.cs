@@ -30,17 +30,6 @@ builder.Services.AddCors(builder =>
     );
 });
 builder.Services.AddApiAuthentication();
-app.UseApiAuthentication();
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    await RolesManager.SyncRoles(services, app.Configuration);
-}
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    await SeedDevelopmentData.SeedDevUser(services, app.Configuration);
-}
 builder.Services.AddDbContext<ElAlManagementDbContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
@@ -68,3 +57,14 @@ app.UseHttpsRedirection();
 
 app.MapControllers();
 app.Run();
+app.UseApiAuthentication();
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await RolesManager.SyncRoles(services, app.Configuration);
+}
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await SeedDevelopmentData.SeedDevUser(services, app.Configuration);
+}
