@@ -139,23 +139,21 @@ public abstract class BookingsServiceBase : IBookingsService
         if (updateDto.Flight != null)
         {
             booking.Flight = await _context
-                .Flights.Where(flight => updateDto.Flight.Id == flight.Id)
+                .Flights.Where(flight => updateDto.Flight == flight.Id)
                 .FirstOrDefaultAsync();
         }
 
         if (updateDto.Passenger != null)
         {
             booking.Passenger = await _context
-                .Passengers.Where(passenger => updateDto.Passenger.Id == passenger.Id)
+                .Passengers.Where(passenger => updateDto.Passenger == passenger.Id)
                 .FirstOrDefaultAsync();
         }
 
         if (updateDto.Seatings != null)
         {
             booking.Seatings = await _context
-                .Seatings.Where(seating =>
-                    updateDto.Seatings.Select(t => t.Id).Contains(seating.Id)
-                )
+                .Seatings.Where(seating => updateDto.Seatings.Select(t => t).Contains(seating.Id))
                 .ToListAsync();
         }
 

@@ -129,9 +129,7 @@ public abstract class PassengersServiceBase : IPassengersService
         if (updateDto.Bookings != null)
         {
             passenger.Bookings = await _context
-                .Bookings.Where(booking =>
-                    updateDto.Bookings.Select(t => t.Id).Contains(booking.Id)
-                )
+                .Bookings.Where(booking => updateDto.Bookings.Select(t => t).Contains(booking.Id))
                 .ToListAsync();
         }
 
