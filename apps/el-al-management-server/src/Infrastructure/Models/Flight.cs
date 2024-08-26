@@ -28,6 +28,9 @@ public class FlightDbModel
     [StringLength(1000)]
     public string? Origin { get; set; }
 
+    [Range(100, 200)]
+    public double? Price { get; set; }
+
     [Required()]
     public DateTime UpdatedAt { get; set; }
 }

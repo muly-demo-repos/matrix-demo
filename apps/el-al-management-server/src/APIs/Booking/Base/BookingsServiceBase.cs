@@ -136,10 +136,26 @@ public abstract class BookingsServiceBase : IBookingsService
     {
         var booking = updateDto.ToModel(uniqueId);
 
+        if (updateDto.Flight != null)
+        {
+            booking.Flight = await _context
+                .Flights.Where(flight => updateDto.Flight.Id == flight.Id)
+                .FirstOrDefaultAsync();
+        }
+
+        if (updateDto.Passenger != null)
+        {
+            booking.Passenger = await _context
+                .Passengers.Where(passenger => updateDto.Passenger.Id == passenger.Id)
+                .FirstOrDefaultAsync();
+        }
+
         if (updateDto.Seatings != null)
         {
             booking.Seatings = await _context
-                .Seatings.Where(seating => updateDto.Seatings.Select(t => t).Contains(seating.Id))
+                .Seatings.Where(seating =>
+                    updateDto.Seatings.Select(t => t.Id).Contains(seating.Id)
+                )
                 .ToListAsync();
         }
 
@@ -199,7 +215,7 @@ public abstract class BookingsServiceBase : IBookingsService
     /// </summary>
     public async Task ConnectSeatings(
         BookingWhereUniqueInput uniqueId,
-        SeatingWhereUniqueInput[] seatingsId
+        SeatingWhereUniqueInput[] childrenIds
     )
     {
         var parent = await _context
@@ -210,19 +226,19 @@ public abstract class BookingsServiceBase : IBookingsService
             throw new NotFoundException();
         }
 
-        var seatings = await _context
-            .Seatings.Where(t => seatingsId.Select(x => x.Id).Contains(t.Id))
+        var children = await _context
+            .Seatings.Where(t => childrenIds.Select(x => x.Id).Contains(t.Id))
             .ToListAsync();
-        if (seatings.Count == 0)
+        if (children.Count == 0)
         {
             throw new NotFoundException();
         }
 
-        var seatingsToConnect = seatings.Except(parent.Seatings);
+        var childrenToConnect = children.Except(parent.Seatings);
 
-        foreach (var seating in seatingsToConnect)
+        foreach (var child in childrenToConnect)
         {
-            parent.Seatings.Add(seating);
+            parent.Seatings.Add(child);
         }
 
         await _context.SaveChangesAsync();
@@ -233,7 +249,7 @@ public abstract class BookingsServiceBase : IBookingsService
     /// </summary>
     public async Task DisconnectSeatings(
         BookingWhereUniqueInput uniqueId,
-        SeatingWhereUniqueInput[] seatingsId
+        SeatingWhereUniqueInput[] childrenIds
     )
     {
         var parent = await _context
@@ -244,13 +260,13 @@ public abstract class BookingsServiceBase : IBookingsService
             throw new NotFoundException();
         }
 
-        var seatings = await _context
-            .Seatings.Where(t => seatingsId.Select(x => x.Id).Contains(t.Id))
+        var children = await _context
+            .Seatings.Where(t => childrenIds.Select(x => x.Id).Contains(t.Id))
             .ToListAsync();
 
-        foreach (var seating in seatings)
+        foreach (var child in children)
         {
-            parent.Seatings?.Remove(seating);
+            parent.Seatings?.Remove(child);
         }
         await _context.SaveChangesAsync();
     }
@@ -279,7 +295,7 @@ public abstract class BookingsServiceBase : IBookingsService
     /// </summary>
     public async Task UpdateSeatings(
         BookingWhereUniqueInput uniqueId,
-        SeatingWhereUniqueInput[] seatingsId
+        SeatingWhereUniqueInput[] childrenIds
     )
     {
         var booking = await _context
@@ -290,16 +306,16 @@ public abstract class BookingsServiceBase : IBookingsService
             throw new NotFoundException();
         }
 
-        var seatings = await _context
-            .Seatings.Where(a => seatingsId.Select(x => x.Id).Contains(a.Id))
+        var children = await _context
+            .Seatings.Where(a => childrenIds.Select(x => x.Id).Contains(a.Id))
             .ToListAsync();
 
-        if (seatings.Count == 0)
+        if (children.Count == 0)
         {
             throw new NotFoundException();
         }
 
-        booking.Seatings = seatings;
+        booking.Seatings = children;
         await _context.SaveChangesAsync();
     }
 }

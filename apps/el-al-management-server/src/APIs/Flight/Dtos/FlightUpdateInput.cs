@@ -18,5 +18,7 @@ public class FlightUpdateInput
 
     public string? Origin { get; set; }
 
+    public double? Price { get; set; }
+
     public DateTime? UpdatedAt { get; set; }
 }

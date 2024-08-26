@@ -2,6 +2,7 @@ using ElAlManagement.APIs;
 using ElAlManagement.APIs.Common;
 using ElAlManagement.APIs.Dtos;
 using ElAlManagement.APIs.Errors;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ElAlManagement.APIs;
@@ -21,6 +22,7 @@ public abstract class SeatingsControllerBase : ControllerBase
     /// Create one Seating
     /// </summary>
     [HttpPost()]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult<Seating>> CreateSeating(SeatingCreateInput input)
     {
         var seating = await _service.CreateSeating(input);
@@ -32,6 +34,7 @@ public abstract class SeatingsControllerBase : ControllerBase
     /// Delete one Seating
     /// </summary>
     [HttpDelete("{Id}")]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult> DeleteSeating([FromRoute()] SeatingWhereUniqueInput uniqueId)
     {
         try
@@ -50,6 +53,7 @@ public abstract class SeatingsControllerBase : ControllerBase
     /// Find many Seatings
     /// </summary>
     [HttpGet()]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult<List<Seating>>> Seatings(
         [FromQuery()] SeatingFindManyArgs filter
     )
@@ -72,6 +76,7 @@ public abstract class SeatingsControllerBase : ControllerBase
     /// Get one Seating
     /// </summary>
     [HttpGet("{Id}")]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult<Seating>> Seating([FromRoute()] SeatingWhereUniqueInput uniqueId)
     {
         try
@@ -88,6 +93,7 @@ public abstract class SeatingsControllerBase : ControllerBase
     /// Update one Seating
     /// </summary>
     [HttpPatch("{Id}")]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult> UpdateSeating(
         [FromRoute()] SeatingWhereUniqueInput uniqueId,
         [FromQuery()] SeatingUpdateInput seatingUpdateDto
@@ -108,7 +114,7 @@ public abstract class SeatingsControllerBase : ControllerBase
     /// <summary>
     /// Get a Booking record for Seating
     /// </summary>
-    [HttpGet("{Id}/bookings")]
+    [HttpGet("{Id}/booking")]
     public async Task<ActionResult<List<Booking>>> GetBooking(
         [FromRoute()] SeatingWhereUniqueInput uniqueId
     )

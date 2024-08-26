@@ -2,6 +2,7 @@ using ElAlManagement.APIs;
 using ElAlManagement.APIs.Common;
 using ElAlManagement.APIs.Dtos;
 using ElAlManagement.APIs.Errors;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ElAlManagement.APIs;
@@ -21,6 +22,7 @@ public abstract class FlightsControllerBase : ControllerBase
     /// Create one Flight
     /// </summary>
     [HttpPost()]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult<Flight>> CreateFlight(FlightCreateInput input)
     {
         var flight = await _service.CreateFlight(input);
@@ -32,6 +34,7 @@ public abstract class FlightsControllerBase : ControllerBase
     /// Delete one Flight
     /// </summary>
     [HttpDelete("{Id}")]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult> DeleteFlight([FromRoute()] FlightWhereUniqueInput uniqueId)
     {
         try
@@ -50,6 +53,7 @@ public abstract class FlightsControllerBase : ControllerBase
     /// Find many Flights
     /// </summary>
     [HttpGet()]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult<List<Flight>>> Flights([FromQuery()] FlightFindManyArgs filter)
     {
         return Ok(await _service.Flights(filter));
@@ -70,6 +74,7 @@ public abstract class FlightsControllerBase : ControllerBase
     /// Get one Flight
     /// </summary>
     [HttpGet("{Id}")]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult<Flight>> Flight([FromRoute()] FlightWhereUniqueInput uniqueId)
     {
         try
@@ -86,6 +91,7 @@ public abstract class FlightsControllerBase : ControllerBase
     /// Update one Flight
     /// </summary>
     [HttpPatch("{Id}")]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult> UpdateFlight(
         [FromRoute()] FlightWhereUniqueInput uniqueId,
         [FromQuery()] FlightUpdateInput flightUpdateDto
@@ -107,6 +113,7 @@ public abstract class FlightsControllerBase : ControllerBase
     /// Connect multiple Bookings records to Flight
     /// </summary>
     [HttpPost("{Id}/bookings")]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult> ConnectBookings(
         [FromRoute()] FlightWhereUniqueInput uniqueId,
         [FromQuery()] BookingWhereUniqueInput[] bookingsId
@@ -128,6 +135,7 @@ public abstract class FlightsControllerBase : ControllerBase
     /// Disconnect multiple Bookings records from Flight
     /// </summary>
     [HttpDelete("{Id}/bookings")]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult> DisconnectBookings(
         [FromRoute()] FlightWhereUniqueInput uniqueId,
         [FromBody()] BookingWhereUniqueInput[] bookingsId
@@ -149,6 +157,7 @@ public abstract class FlightsControllerBase : ControllerBase
     /// Find multiple Bookings records for Flight
     /// </summary>
     [HttpGet("{Id}/bookings")]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult<List<Booking>>> FindBookings(
         [FromRoute()] FlightWhereUniqueInput uniqueId,
         [FromQuery()] BookingFindManyArgs filter
@@ -168,6 +177,7 @@ public abstract class FlightsControllerBase : ControllerBase
     /// Update multiple Bookings records for Flight
     /// </summary>
     [HttpPatch("{Id}/bookings")]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult> UpdateBookings(
         [FromRoute()] FlightWhereUniqueInput uniqueId,
         [FromBody()] BookingWhereUniqueInput[] bookingsId
@@ -183,5 +193,14 @@ public abstract class FlightsControllerBase : ControllerBase
         }
 
         return NoContent();
+    }
+
+    [HttpGet("{Id}/calculate-flight-occupancy")]
+    [Authorize(Roles = "user")]
+    public async Task<double> CalculateFlightOccupancy(
+        [FromBody()] FlightWhereUniqueInput flightWhereUniqueInputDto
+    )
+    {
+        return await _service.CalculateFlightOccupancy(flightWhereUniqueInputDto);
     }
 }

@@ -17,6 +17,7 @@ public static class FlightsExtensions
             FlightNumber = model.FlightNumber,
             Id = model.Id,
             Origin = model.Origin,
+            Price = model.Price,
             UpdatedAt = model.UpdatedAt,
         };
     }
@@ -33,7 +34,8 @@ public static class FlightsExtensions
             DepartureTime = updateDto.DepartureTime,
             Destination = updateDto.Destination,
             FlightNumber = updateDto.FlightNumber,
-            Origin = updateDto.Origin
+            Origin = updateDto.Origin,
+            Price = updateDto.Price
         };
 
         if (updateDto.CreatedAt != null)

@@ -119,6 +119,13 @@ public abstract class SeatingsServiceBase : ISeatingsService
     {
         var seating = updateDto.ToModel(uniqueId);
 
+        if (updateDto.Booking != null)
+        {
+            seating.Booking = await _context
+                .Bookings.Where(booking => updateDto.Booking.Id == booking.Id)
+                .FirstOrDefaultAsync();
+        }
+
         _context.Entry(seating).State = EntityState.Modified;
 
         try

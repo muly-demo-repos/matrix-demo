@@ -2,6 +2,7 @@ using ElAlManagement.APIs;
 using ElAlManagement.APIs.Common;
 using ElAlManagement.APIs.Dtos;
 using ElAlManagement.APIs.Errors;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ElAlManagement.APIs;
@@ -21,6 +22,7 @@ public abstract class PassengersControllerBase : ControllerBase
     /// Create one Passenger
     /// </summary>
     [HttpPost()]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult<Passenger>> CreatePassenger(PassengerCreateInput input)
     {
         var passenger = await _service.CreatePassenger(input);
@@ -32,6 +34,7 @@ public abstract class PassengersControllerBase : ControllerBase
     /// Delete one Passenger
     /// </summary>
     [HttpDelete("{Id}")]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult> DeletePassenger(
         [FromRoute()] PassengerWhereUniqueInput uniqueId
     )
@@ -52,6 +55,7 @@ public abstract class PassengersControllerBase : ControllerBase
     /// Find many Passengers
     /// </summary>
     [HttpGet()]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult<List<Passenger>>> Passengers(
         [FromQuery()] PassengerFindManyArgs filter
     )
@@ -74,6 +78,7 @@ public abstract class PassengersControllerBase : ControllerBase
     /// Get one Passenger
     /// </summary>
     [HttpGet("{Id}")]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult<Passenger>> Passenger(
         [FromRoute()] PassengerWhereUniqueInput uniqueId
     )
@@ -92,6 +97,7 @@ public abstract class PassengersControllerBase : ControllerBase
     /// Update one Passenger
     /// </summary>
     [HttpPatch("{Id}")]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult> UpdatePassenger(
         [FromRoute()] PassengerWhereUniqueInput uniqueId,
         [FromQuery()] PassengerUpdateInput passengerUpdateDto
@@ -113,6 +119,7 @@ public abstract class PassengersControllerBase : ControllerBase
     /// Connect multiple Bookings records to Passenger
     /// </summary>
     [HttpPost("{Id}/bookings")]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult> ConnectBookings(
         [FromRoute()] PassengerWhereUniqueInput uniqueId,
         [FromQuery()] BookingWhereUniqueInput[] bookingsId
@@ -134,6 +141,7 @@ public abstract class PassengersControllerBase : ControllerBase
     /// Disconnect multiple Bookings records from Passenger
     /// </summary>
     [HttpDelete("{Id}/bookings")]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult> DisconnectBookings(
         [FromRoute()] PassengerWhereUniqueInput uniqueId,
         [FromBody()] BookingWhereUniqueInput[] bookingsId
@@ -155,6 +163,7 @@ public abstract class PassengersControllerBase : ControllerBase
     /// Find multiple Bookings records for Passenger
     /// </summary>
     [HttpGet("{Id}/bookings")]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult<List<Booking>>> FindBookings(
         [FromRoute()] PassengerWhereUniqueInput uniqueId,
         [FromQuery()] BookingFindManyArgs filter
@@ -174,6 +183,7 @@ public abstract class PassengersControllerBase : ControllerBase
     /// Update multiple Bookings records for Passenger
     /// </summary>
     [HttpPatch("{Id}/bookings")]
+    [Authorize(Roles = "user")]
     public async Task<ActionResult> UpdateBookings(
         [FromRoute()] PassengerWhereUniqueInput uniqueId,
         [FromBody()] BookingWhereUniqueInput[] bookingsId
